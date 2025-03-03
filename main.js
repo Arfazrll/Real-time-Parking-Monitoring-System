@@ -40,7 +40,7 @@ function updateDashboard() {
 function updateActivityTable() {
     activityTableBody.innerHTML = '';
     
-    if (parkingData.recentActivity.length === 0) {
+    if (!parkingData.recentActivity || parkingData.recentActivity.length === 0) {
         const row = document.createElement('tr');
         const cell = document.createElement('td');
         cell.colSpan = 5;
@@ -102,16 +102,66 @@ function initThemeToggle() {
     });
 }
 
-// Fetch dashboard data from API
+// Fungsi untuk menampilkan pesan error
+function showErrorMessage(message) {
+    // Hapus pesan error sebelumnya jika ada
+    const existingError = document.querySelector('.error-message');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    const errorMsgElement = document.createElement('div');
+    errorMsgElement.className = 'error-message';
+    errorMsgElement.textContent = message;
+    document.querySelector('.container').insertBefore(errorMsgElement, document.querySelector('.main-display'));
+    
+    // Remove error message after 5 seconds
+    setTimeout(() => {
+        const errorElement = document.querySelector('.error-message');
+        if (errorElement) {
+            errorElement.remove();
+        }
+    }, 5000);
+}
+
+// Fetch dashboard data from API with POST method
 async function fetchDashboardData() {
     try {
-        const response = await fetch('api/get_dashboard_data.php');
+        console.log('Fetching dashboard data...');
+        const response = await fetch('http://172.20.10.3/sistem_parkir/api/get_dashboard_data.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                request_type: 'get_data'
+            })
+        });
+        
+        console.log('Response status:', response.status);
         
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         
-        const data = await response.json();
+        // Log raw response for debugging
+        const rawText = await response.text();
+        console.log('Raw API response:', rawText);
+        
+        // Parse JSON if valid
+        let data;
+        try {
+            data = JSON.parse(rawText);
+        } catch (e) {
+            console.error('JSON parse error:', e);
+            throw new Error('Invalid JSON response');
+        }
+        
+        if (data.error) {
+            throw new Error(`API Error: ${data.error}`);
+        }
+        
+        console.log('Parsed data:', data);
         
         // Update global parking data
         parkingData = data;
@@ -119,26 +169,22 @@ async function fetchDashboardData() {
         // Update UI
         updateDashboard();
         
+        // Hide error message if exists
+        const errorElement = document.querySelector('.error-message');
+        if (errorElement) {
+            errorElement.remove();
+        }
+        
     } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        // Display error message on the dashboard
-        const errorMsgElement = document.createElement('div');
-        errorMsgElement.className = 'error-message';
-        errorMsgElement.textContent = 'Gagal memuat data. Periksa koneksi atau refresh.';
-        document.querySelector('.container').insertBefore(errorMsgElement, document.querySelector('.dashboard').nextSibling);
-        
-        // Remove error message after 5 seconds
-        setTimeout(() => {
-            const errorElement = document.querySelector('.error-message');
-            if (errorElement) {
-                errorElement.remove();
-            }
-        }, 5000);
+        showErrorMessage('Gagal memuat data. Periksa koneksi atau refresh.');
     }
 }
 
 // Initialize the application
 function init() {
+    console.log('Initializing application...');
+    
     // Fetch initial data
     fetchDashboardData();
     
@@ -157,8 +203,13 @@ function init() {
         fetchDashboardData().then(() => {
             this.disabled = false;
             this.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+        }).catch(() => {
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
         });
     });
+    
+    console.log('Application initialized successfully');
 }
 
 // Run initialization when the page loads
@@ -166,6 +217,8 @@ window.addEventListener('load', init);
 
 // Add some animations on load
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
+    
     // Animate the dashboard cards
     const statusCards = document.querySelectorAll('.status-card');
     statusCards.forEach((card, index) => {

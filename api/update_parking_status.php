@@ -1,5 +1,17 @@
 <?php
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Log all requests for debugging
+error_log("Received request to update_parking_status.php. Method: " . $_SERVER['REQUEST_METHOD']);
+
+// Handle OPTIONS request for CORS preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 // Include database connection
 require_once '../config/db_connect.php';
@@ -13,7 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Get JSON data
 $json_data = file_get_contents('php://input');
+error_log("Received data: " . $json_data);  // Log the raw input for debugging
+
 $data = json_decode($json_data, true);
+
+// Check if JSON decoding was successful
+if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+    error_log("JSON decode error: " . json_last_error_msg());
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid JSON format: ' . json_last_error_msg()]);
+    exit;
+}
 
 // Validate required fields
 if (!isset($data['rfid_number']) || !isset($data['status'])) {
@@ -25,6 +47,13 @@ if (!isset($data['rfid_number']) || !isset($data['status'])) {
 // Extract data
 $rfid_number = $data['rfid_number'];
 $status = $data['status']; // 'Masuk' or 'Keluar'
+
+// Validasi nilai status
+if ($status !== 'Masuk' && $status !== 'Keluar') {
+    http_response_code(400);
+    echo json_encode(['error' => 'Status harus berupa "Masuk" atau "Keluar"']);
+    exit;
+}
 
 // Begin transaction
 try {
@@ -71,8 +100,8 @@ try {
     $conn->rollBack();
     
     // Log error and return an error response
-    error_log("API Error: " . $e->getMessage(), 0);
+    error_log("API Error in update_parking_status.php: " . $e->getMessage(), 0);
     http_response_code(500);
-    echo json_encode(['error' => 'Database error occurred']);
+    echo json_encode(['error' => 'Database error occurred: ' . $e->getMessage()]);
 }
 ?>

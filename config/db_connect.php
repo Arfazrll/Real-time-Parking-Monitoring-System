@@ -15,9 +15,22 @@ try {
     // Set default fetch mode to associative array
     $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     
+    // Enable UTF-8 support
+    $conn->exec("SET NAMES utf8");
+    
 } catch(PDOException $e) {
     // Log the error to a file instead of displaying it
-    error_log("Connection failed: " . $e->getMessage(), 0);
+    error_log("Database connection failed: " . $e->getMessage(), 0);
+    
+    // Return JSON error if this is an API request
+    if (strpos($_SERVER['REQUEST_URI'], '/api/') !== false) {
+        header('Content-Type: application/json');
+        http_response_code(500);
+        echo json_encode(['error' => 'Database connection failed']);
+        exit;
+    }
+    
+    // Otherwise show a generic error
     die("Database connection failed. Please check your server logs or contact the administrator.");
 }
 ?>
