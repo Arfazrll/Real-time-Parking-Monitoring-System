@@ -83,9 +83,12 @@ REAL-TIME-PARKING-MONITORING-SYSTEM/
 This project is available under the MIT License. See the LICENSE file for more information.
 
 ## 👤 Author
-
 CPS4R
+- Najwa Syafira Firdaus
+- Syahril Arfian Almazril
+- Aria Aura Rachman
+- Asep Jamaludin 
 
 ---
 
-© 2023 Real-time Parking Monitoring System
+© 2025 Real-time Parking Monitoring System
