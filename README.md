@@ -1,8 +1,7 @@
 # 🅿️Real-time Parking Monitoring System
 
-
-<img src="https://img.shields.io/badge/Web-Dashboard-orange" alt="Web Dashboard"/> <img src="https://img.shields.io/badge/Status-Active-brightgreen" alt="Status Active"/> <img src="https://img.shields.io/badge/ESP32-IoT-blue" alt="ESP32 IoT"/>
-
+<img src="https://img.shields.io/badge/ESP32-IoT-blue?style=for-the-badge&logo=espressif" alt="ESP32 IoT"/> <img src="https://img.shields.io/badge/Web-Dashboard-orange?style=for-the-badge&logo=html5" alt="Web Dashboard"/> <img src="https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge&logo=statuspage" alt="Status Active"/> <img src="https://img.shields.io/badge/PHP-Backend-777BB4?style=for-the-badge&logo=php" alt="PHP Backend"/> <img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql" alt="MySQL Database"/>
+    
 A comprehensive solution for real-time monitoring of parking spaces that integrates ESP32 microcontroller with RFID and IR sensors, providing a web-based dashboard for managing parking activity.
 
 ## 📋 Project Overview
