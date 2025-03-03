@@ -83,7 +83,7 @@ REAL-TIME-PARKING-MONITORING-SYSTEM/
 This project is available under the MIT License. See the LICENSE file for more information.
 
 ## 👤 Author
-Cyber Pysical System Riset Group 4 (CPS4R)
+Cyber Pysical System Research Group 4 (CPS4R)
 - Najwa Syafira Firdaus
 - Syahril Arfian Almazril
 - Aria Aura Rachman
